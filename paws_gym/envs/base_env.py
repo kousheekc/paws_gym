@@ -44,6 +44,7 @@ class BaseEnv(gym.Env):
     def reset(self, seed : int = None, options : dict = None):
         if (self._init_state is not None):
             self._pybullet_client.restoreState(self._init_state)
+            self.elapsed_time = 0.0
         else:
             self._init()
 
@@ -53,16 +54,8 @@ class BaseEnv(gym.Env):
         return obs, info
 
     def step(self, action):
-        action_dict = {
-            'frequency': action[0],
-            'ratio': action[1],
-            'step_lengths': [action[2], action[3], action[4], action[5]],
-            'step_heights': [action[6], action[7], action[8], action[9]],
-            'nominal_heights': [action[10], action[11], action[12], action[13]],
-            'directions': [action[14], action[15], action[16], action[17]],
-        }
         for _ in range(self.pyb_steps_per_control):
-            self._bot.step(self.elapsed_time, action_dict)
+            self._bot.step(self.elapsed_time, action)
             self.elapsed_time += self.pyb_timestep
             self._pybullet_client.stepSimulation()
 
@@ -71,7 +64,7 @@ class BaseEnv(gym.Env):
         vel, ang_vel = self._pybullet_client.getBaseVelocity(self._bot._bot_id)
 
         obs_current = np.array([pos[0], pos[1], pos[2], rpy[0], rpy[1], rpy[2], vel[0], vel[1], vel[2], ang_vel[0], ang_vel[1], ang_vel[2]])
-        act_current = np.concatenate([np.array([action_dict['frequency']]), np.array([action_dict['ratio']]), np.array(action_dict['step_lengths']), np.array(action_dict['step_heights']), np.array(action_dict['nominal_heights']), np.array(action_dict['directions'])])
+        act_current = np.array(action)
 
         self._obs_buffer.append(obs_current)
         self._act_buffer.append(act_current)
@@ -87,7 +80,7 @@ class BaseEnv(gym.Env):
     def close(self):
         self._pybullet_client.disconnect()
 
-    def _init(self):    
+    def _init(self): 
         self._pybullet_client.resetSimulation()
         self._pybullet_client.configureDebugVisualizer(self._pybullet_client.COV_ENABLE_RENDERING, 0)
         self._pybullet_client.configureDebugVisualizer(self._pybullet_client.COV_ENABLE_RGB_BUFFER_PREVIEW, 0)

@@ -10,8 +10,8 @@ class Bot(object):
 
         self._fixed = fixed
 
-        self._base_act_lower_bound = np.array([0.1,   np.pi/2, 0.0,  0.0,  0.0,  0.0,  0.01, 0.01, 0.01, 0.01, 0.08, 0.08, 0.08, 0.08, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2])
-        self._base_act_upper_bound = np.array([1.0, 3*np.pi/2, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.12, 0.12, 0.12, 0.12,  np.pi/2,  np.pi/2,  np.pi/2,  np.pi/2])
+        self._base_act_lower_bound = np.array([0.0,  0.01, 0.10, -np.pi/2])
+        self._base_act_upper_bound = np.array([0.03, 0.03, 0.14,  np.pi/2])
 
         self._base_obs_lower_bound = np.array([-np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf])
         self._base_obs_upper_bound = np.array([ np.inf,  np.inf,  np.inf,  np.inf,  np.inf,  np.inf,  np.inf,  np.inf,  np.inf,  np.inf,  np.inf,  np.inf])
@@ -33,18 +33,18 @@ class Bot(object):
                 self._pybullet_client.stepSimulation()
 
     def step(self, elapsed_time, action):
-        self._bot_model.fl_tg.frequency = action['frequency']
-        self._bot_model.fr_tg.frequency = action['frequency']
-        self._bot_model.bl_tg.frequency = action['frequency']
-        self._bot_model.br_tg.frequency = action['frequency']
-        self._bot_model.fl_tg.swing_stance_ratio = action['ratio']
-        self._bot_model.fr_tg.swing_stance_ratio = action['ratio']
-        self._bot_model.bl_tg.swing_stance_ratio = action['ratio']
-        self._bot_model.br_tg.swing_stance_ratio = action['ratio']
-        self._bot_model.fl_tg.adjustable_params = [action['step_lengths'][0], action['step_heights'][0], action['nominal_heights'][0], action['directions'][0]]
-        self._bot_model.fr_tg.adjustable_params = [action['step_lengths'][1], action['step_heights'][1], action['nominal_heights'][1], action['directions'][1]]
-        self._bot_model.bl_tg.adjustable_params = [action['step_lengths'][2], action['step_heights'][2], action['nominal_heights'][2], action['directions'][2]]
-        self._bot_model.br_tg.adjustable_params = [action['step_lengths'][3], action['step_heights'][3], action['nominal_heights'][3], action['directions'][3]]
+        # self._bot_model.fl_tg.frequency = action[0]
+        # self._bot_model.fr_tg.frequency = action[0]
+        # self._bot_model.bl_tg.frequency = action[0]
+        # self._bot_model.br_tg.frequency = action[0]
+        # self._bot_model.fl_tg.swing_stance_ratio = action[1]
+        # self._bot_model.fr_tg.swing_stance_ratio = action[1]
+        # self._bot_model.bl_tg.swing_stance_ratio = action[1]
+        # self._bot_model.br_tg.swing_stance_ratio = action[1]
+        self._bot_model.fl_tg.adjustable_params = [action[0], action[1], action[2], action[3]]
+        self._bot_model.fr_tg.adjustable_params = [action[0], action[1], action[2], action[3]]
+        self._bot_model.bl_tg.adjustable_params = [action[0], action[1], action[2], action[3]]
+        self._bot_model.br_tg.adjustable_params = [action[0], action[1], action[2], action[3]]
 
         (fl, fr, bl, br) = self._bot_model.compute(elapsed_time)
 

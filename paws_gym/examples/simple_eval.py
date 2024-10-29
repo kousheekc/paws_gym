@@ -16,10 +16,15 @@ if __name__ == "__main__":
     # mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10, deterministic=True)
     # print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
 
-    env = VelocityControlEnv(pyb_freq=240, ctrl_freq=120, fixed=False, gui=True)
+    env = VelocityControlEnv(pyb_freq=240, ctrl_freq=10, fixed=False, gui=True)
     obs, _ = env.reset()
-
-    for _ in range(10000):
+    total_reward = 0
+    while True:
         action, _ = model.predict(obs)
+        print(action)
         obs, reward, done, truncated, info = env.step(action)
-        print(f"Reward: {reward}")
+        total_reward += reward
+        if (truncated):
+            break
+    
+    print(f"Reward: {total_reward}")

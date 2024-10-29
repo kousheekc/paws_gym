@@ -17,10 +17,10 @@ class Model:
         self._bl_leg = Leg("bl", 0.038, 0.08, 0.08)
         self._br_leg = Leg("br", 0.038, 0.08, 0.08)
         
-        self._fl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][0], 0.1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
-        self._fr_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][1], 0.1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
-        self._bl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][2], 0.1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
-        self._br_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][3], 0.1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
+        self._fl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][0], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
+        self._fr_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][1], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
+        self._bl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][2], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
+        self._br_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][3], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
 
     def compute(self, t):
         fl_pos = self._fl_tg.compute(t)
