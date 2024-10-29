@@ -36,7 +36,7 @@ class BaseEnv(gym.Env):
         for _ in range(self.history):
             self._obs_buffer.append(np.zeros(self._bot._base_obs_lower_bound.size))
         for _ in range(self.history):
-            self._act_buffer.append(self._bot._base_act_lower_bound)
+            self._act_buffer.append(np.zeros(self._bot._base_act_lower_bound.size))
 
         self.action_space = self._action_space()
         self.observation_space = self._observation_space()
@@ -109,12 +109,7 @@ class BaseEnv(gym.Env):
         return spaces.Box(low=bot_act[0], high=bot_act[1], dtype=np.float32)
     
     def _compute_obs(self):
-        obs_complete = np.array([])
-        for obs in self._obs_buffer:
-            obs_complete = np.hstack([obs_complete, obs])
-        for act_obs in self._act_buffer:
-            obs_complete = np.hstack([obs_complete, act_obs])
-
+        obs_complete = np.hstack([self.obs_buffer[-1], self.act_buffer[-1]])
         return obs_complete.astype(np.float32)
 
     def _compute_reward(self):

@@ -34,11 +34,15 @@ class Bot(object):
                 self._pybullet_client.stepSimulation()
 
     def step(self, elapsed_time, action):
-        # action = frequnecy, step_length, step_height, nominal_height, direction
-        self._bot_model.fl_tg.adjustable_params = [action[0], action[1], action[2], action[3], action[4]]
-        self._bot_model.fr_tg.adjustable_params = [action[0], action[1], action[2], action[3], action[4]]
-        self._bot_model.bl_tg.adjustable_params = [action[0], action[1], action[2], action[3], action[4]]
-        self._bot_model.br_tg.adjustable_params = [action[0], action[1], action[2], action[3], action[4]]
+        # action = frequency, step_length, step_height, nominal_height, direction
+        mapped_action = []
+        for i, act in enumerate(action):
+            mapped_action.append(self._map(act, self._base_act_lower_bound[i], self._base_act_upper_bound[i]))
+
+        self._bot_model.fl_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
+        self._bot_model.fr_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
+        self._bot_model.bl_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
+        self._bot_model.br_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
 
         (fl, fr, bl, br) = self._bot_model.compute(elapsed_time)
 
@@ -54,6 +58,9 @@ class Bot(object):
         self._set_angle_by_name('br_j1', br[0])
         self._set_angle_by_name('br_j2', br[1])
         self._set_angle_by_name('br_j3', br[2])
+
+    def _map(self, val, min, max):
+        return min + (val + 1) * (max - min) / 2
 
     def _build_name_id_map(self):
         num_joints = self._pybullet_client.getNumJoints(self._bot_id)
@@ -72,18 +79,10 @@ class Bot(object):
         self._set_angle_by_id(self._joint_name_to_id[motor_name], angle)
 
     def _action_space_bounds(self):
-        return (self._base_act_lower_bound, self._base_act_upper_bound)
+        return (-1*np.ones(self._base_act_lower_bound.size), 1*np.ones(self._base_act_upper_bound.size))
     
     def _observation_space_bounds(self):
-        obs_lower_bound = np.array([])
-        obs_upper_bound = np.array([])
-
-        for _ in range(self._history):
-            obs_lower_bound = np.hstack([obs_lower_bound, self._base_obs_lower_bound])
-            obs_upper_bound = np.hstack([obs_upper_bound, self._base_obs_upper_bound])
-        for _ in range(self._history):
-            obs_lower_bound = np.hstack([obs_lower_bound, self._base_act_lower_bound])
-            obs_upper_bound = np.hstack([obs_upper_bound, self._base_act_upper_bound])
-
+        obs_lower_bound = np.hstack([self._base_obs_lower_bound, -1*np.ones(self._base_act_lower_bound.size)])
+        obs_upper_bound = np.hstack([self._base_obs_upper_bound,  1*np.ones(self._base_act_upper_bound.size)])
         return (obs_lower_bound, obs_upper_bound)
     
