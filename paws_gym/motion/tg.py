@@ -70,7 +70,7 @@ class ParametricTrajectoryGenerator:
     
     @property
     def adjustable_params(self): 
-        return (self.step_length, self.step_height, self.nominal_height, self.swing_stance_ratio, self.direction)
+        return (self.frequency, self.step_length, self.step_height, self.nominal_height, self.swing_stance_ratio, self.direction)
     
     @phase_offset.setter 
     def phase_offset(self, phase_offset): 
@@ -102,7 +102,8 @@ class ParametricTrajectoryGenerator:
 
     @adjustable_params.setter 
     def adjustable_params(self, adjustable_params): 
-        self._step_length = adjustable_params[0]
-        self._step_height = adjustable_params[1]
-        self._nominal_height = adjustable_params[2]
-        self._direction = adjustable_params[3]
+        self._frequency = adjustable_params[0]
+        self._step_length = adjustable_params[1]
+        self._step_height = adjustable_params[2]
+        self._nominal_height = adjustable_params[3]
+        self._direction = adjustable_params[4]

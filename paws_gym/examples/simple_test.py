@@ -10,7 +10,7 @@ if __name__ == "__main__":
     total_reward = 0
     count = 0
     while True:
-        obs, rew, done, truncated, info = env.step([0.02, 0.02, 0.12, 0])
+        obs, rew, done, truncated, info = env.step([1.0, 0.02, 0.02, 0.12, 0])
         total_reward += rew
         count += 1
         if truncated or done:
