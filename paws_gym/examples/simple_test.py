@@ -1,12 +1,12 @@
-from paws_gym.envs.base_env import BaseEnv
+from paws_gym.envs.velocity_control_env import VelocityControlEnv
 import numpy as np
 
 if __name__ == "__main__":
-    env = BaseEnv(gui=True, ctrl_freq=30)
+    env = VelocityControlEnv(pyb_freq=240, ctrl_freq=10, fixed=True, gui=True)
     print('[INFO] Observation space:', env.observation_space)
 
-
-    action = env.action_space.sample()
+    env.reset()
 
     while True:
-        env.step(action)
+        obs, rew, done, truncated, info = env.step(env.action_space.sample())
+        # print(obs)

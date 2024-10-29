@@ -1,6 +1,5 @@
 import pkg_resources
 import numpy as np
-from collections import deque
 from paws_gym.motion.model import Model
 
 class Bot(object):
@@ -19,14 +18,6 @@ class Bot(object):
 
         self._bot_model = Model("trot")
 
-        self._obs_buffer = deque(maxlen=self._history)
-        self._act_buffer = deque(maxlen=self._history)
-
-        for _ in range(self._history):
-            self._obs_buffer.append(np.zeros(self._base_obs_lower_bound.size))
-        for _ in range(self._history):
-            self._act_buffer.append(self._base_act_lower_bound)
-
         self.reset()
 
     def reset(self):
@@ -35,7 +26,6 @@ class Bot(object):
                             [0, 0, 0, 1],
                             # flags = self._pybullet_client.URDF_USE_SELF_COLLISION,
                             useFixedBase=self._fixed)
-        
         self._build_name_id_map()
         for _ in range(100):
             for motor in self._joint_name_to_id:
@@ -71,16 +61,6 @@ class Bot(object):
         self._set_angle_by_name('br_j2', br[1])
         self._set_angle_by_name('br_j3', br[2])
 
-        pos, quat = self._pybullet_client.getBasePositionAndOrientation(self._bot_id)
-        rpy = self._pybullet_client.getEulerFromQuaternion(quat)
-        vel, ang_vel = self._pybullet_client.getBaseVelocity(self._bot_id)
-
-        obs = np.array([pos[0], pos[1], pos[2], rpy[0], rpy[1], rpy[2], vel[0], vel[1], vel[2], ang_vel[0], ang_vel[1], ang_vel[2]])
-        act = np.concatenate([np.array([action['frequency']]), np.array([action['ratio']]), np.array(action['step_lengths']), np.array(action['step_heights']), np.array(action['nominal_heights']), np.array(action['directions'])])
-
-        self._obs_buffer.append(obs)
-        self._act_buffer.append(act)
-
     def _build_name_id_map(self):
         num_joints = self._pybullet_client.getNumJoints(self._bot_id)
         self._joint_name_to_id = {}
@@ -113,10 +93,3 @@ class Bot(object):
 
         return (obs_lower_bound, obs_upper_bound)
     
-    @property
-    def obs_buffer(self):
-        return self._obs_buffer
-    
-    @property
-    def act_buffer(self):
-        return self._act_buffer
