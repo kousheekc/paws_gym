@@ -12,16 +12,19 @@ class VelocityControlEnv(BaseEnv):
         vel, ang_vel = self._pybullet_client.getBaseVelocity(self._bot._bot_id)
 
         desired_velocity_reward_term = -np.abs(self.desired_velocity[0] - vel[0]) - np.abs(self.desired_velocity[1] - vel[1]) - np.abs(self.desired_velocity[2] - ang_vel[2])
-        pitch_roll_flat_reward_term = -np.exp(rpy[0]**2 + rpy[1]**2)+1
-        change_action_reward_term = -np.sum((self.act_buffer[-1] - self.act_buffer[-2])**2)
-
-        # print(desired_velocity_reward_term, pitch_roll_flat_reward_term, change_action_reward_term)
+        pitch_roll_flat_reward_term = -np.exp(rpy[0]**2 + rpy[1]**2 + rpy[2]**2)+1
+        change_action_reward_term = -np.linalg.norm(self.act_buffer[-1] - self.act_buffer[-2])
 
         reward = desired_velocity_reward_term + pitch_roll_flat_reward_term + change_action_reward_term
         return reward
     
     def _compute_terminated(self):
-        return False
+        pos, quat = self._pybullet_client.getBasePositionAndOrientation(self._bot._bot_id)
+        rpy = self._pybullet_client.getEulerFromQuaternion(quat)
+        if (np.abs(rpy[0]) > 1 or np.abs(rpy[1] > 0)):
+            return True
+        else:
+            return False
     
     def _compute_truncated(self):
         if (self.elapsed_time > 20):

@@ -17,16 +17,29 @@ class Model:
         self._bl_leg = Leg("bl", 0.038, 0.08, 0.08)
         self._br_leg = Leg("br", 0.038, 0.08, 0.08)
         
-        self._fl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][0], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
-        self._fr_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][1], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
-        self._bl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][2], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
-        self._br_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][3], 1, 0.0, 0.02, 0.14, self._gait_params[gait]['ratio'], 0)
+        self._fl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][0], 0.8, 0.01, 0.02, 0.12, self._gait_params[gait]['ratio'], 0)
+        self._fr_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][1], 0.8, 0.01, 0.02, 0.12, self._gait_params[gait]['ratio'], 0)
+        self._bl_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][2], 0.8, 0.01, 0.02, 0.12, self._gait_params[gait]['ratio'], 0)
+        self._br_tg = ParametricTrajectoryGenerator(self._gait_params[gait]['phases'][3], 0.8, 0.01, 0.02, 0.12, self._gait_params[gait]['ratio'], 0)
 
-    def compute(self, t):
+    def compute(self, t, residuals):
         fl_pos = self._fl_tg.compute(t)
         fr_pos = self._fr_tg.compute(t)
         bl_pos = self._bl_tg.compute(t)
         br_pos = self._br_tg.compute(t)
+
+        fl_pos[0] += residuals[0]
+        fl_pos[1] += residuals[1]
+        fl_pos[2] += residuals[2]
+        fr_pos[0] += residuals[3]
+        fr_pos[1] += residuals[4]
+        fr_pos[2] += residuals[5]
+        bl_pos[0] += residuals[6]
+        bl_pos[1] += residuals[7]
+        bl_pos[2] += residuals[8]
+        br_pos[0] += residuals[9]
+        br_pos[1] += residuals[10]
+        br_pos[2] += residuals[11]
 
         fl_joint = self._fl_leg.compute(fl_pos)
         fr_joint = self._fr_leg.compute(fr_pos)

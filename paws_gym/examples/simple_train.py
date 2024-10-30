@@ -12,8 +12,10 @@ if __name__ == "__main__":
     LOG_PATH = f"./logs/"
     MODEL_PATH = f"./models/{NAME}"
 
-    train_env = make_vec_env(VelocityControlEnv, n_envs=1, env_kwargs={"pyb_freq": 240, "ctrl_freq": 1, "fixed": False, "gui": False})
-    model = PPO("MlpPolicy", train_env, verbose=1, tensorboard_log=LOG_PATH)
+    train_env = make_vec_env(VelocityControlEnv, n_envs=1, env_kwargs={"pyb_freq": 240, "ctrl_freq": 240, "fixed": False, "gui": False})
+    # model = PPO("MlpPolicy", train_env, verbose=1, tensorboard_log=LOG_PATH)
+    model = PPO.load(f"./models/{NAME}")
+    model.set_env(train_env)
 
     model.learn(total_timesteps=1000000, progress_bar=True)
 

@@ -10,8 +10,8 @@ class Bot(object):
 
         self._fixed = fixed
 
-        self._base_act_lower_bound = np.array([0.1, 0.0,  0.01, 0.10, -np.pi/2])
-        self._base_act_upper_bound = np.array([2.0, 0.03, 0.03, 0.14,  np.pi/2])
+        self._base_act_lower_bound = np.array([-0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01, -0.01])
+        self._base_act_upper_bound = np.array([ 0.01,  0.01,  0.01,  0.01,  0.01,  0.01,  0.01,  0.01,  0.01,  0.01,  0.01,  0.01])
 
         # posx, posy, posz, roll, pitch, yaw, vx, vy, vz, wx, wy, wz
         self._base_obs_lower_bound = np.array([-np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf, -np.inf])
@@ -37,14 +37,14 @@ class Bot(object):
         # action = frequency, step_length, step_height, nominal_height, direction
         mapped_action = []
         for i, act in enumerate(action):
-            mapped_action.append(self._map(act, self._base_act_lower_bound[i], self._base_act_upper_bound[i]))
+            mapped_action.append(float(self._map(act, self._base_act_lower_bound[i], self._base_act_upper_bound[i])))
 
-        self._bot_model.fl_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
-        self._bot_model.fr_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
-        self._bot_model.bl_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
-        self._bot_model.br_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
+        # self._bot_model.fl_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
+        # self._bot_model.fr_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
+        # self._bot_model.bl_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
+        # self._bot_model.br_tg.adjustable_params = [mapped_action[0], mapped_action[1], mapped_action[2], mapped_action[3], mapped_action[4]]
 
-        (fl, fr, bl, br) = self._bot_model.compute(elapsed_time)
+        (fl, fr, bl, br) = self._bot_model.compute(elapsed_time, mapped_action)
 
         self._set_angle_by_name('fl_j1', fl[0])
         self._set_angle_by_name('fl_j2', fl[1])

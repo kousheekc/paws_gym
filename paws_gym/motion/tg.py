@@ -38,7 +38,7 @@ class ParametricTrajectoryGenerator:
         x = np.cos(self._direction) * x_aligned
         y = np.sin(self._direction) * x_aligned
         z = self._upward_downward(phase)
-        return (x, y, z)
+        return [x, y, z]
 
     @property
     def phase_offset(self): 
