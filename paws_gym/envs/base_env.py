@@ -5,7 +5,7 @@ import numpy as np
 from collections import deque
 import gymnasium as gym
 from gymnasium import spaces
-from paws_gym.envs.bot_env import Bot
+from paws_gym.envs.bot import Bot
 
 class BaseEnv(gym.Env):
     def __init__(self, pyb_freq: int = 240, ctrl_freq: int = 240, fixed=False, gui=False):

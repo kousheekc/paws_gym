@@ -30,7 +30,7 @@ class ParametricTrajectoryGenerator:
             return -self._nominal_height
 
     def compute(self, t):
-        phase = self._mod_2_pi(self._mod_2_pi(2*np.pi*self._frequency*t) + self.phase_offset)
+        phase = self._mod_2_pi(2*np.pi*self._frequency*t + self.phase_offset)
         x_aligned = self._forward_backward(phase)
 
         assert -np.pi/2 <= self._direction <= np.pi/2, f"direction must be in the range [-π/2, π/2], but got self.direction={self._direction}"
