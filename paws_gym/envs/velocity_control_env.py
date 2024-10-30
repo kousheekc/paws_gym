@@ -2,8 +2,8 @@ from paws_gym.envs.base_env import BaseEnv
 import numpy as np
 
 class VelocityControlEnv(BaseEnv):
-    def __init__(self, pyb_freq: int = 240, ctrl_freq: int = 240, fixed=False, gui=False):
-        super().__init__(pyb_freq=pyb_freq, ctrl_freq=ctrl_freq, fixed=fixed, gui=gui)
+    def __init__(self, pyb_freq: int = 240, ctrl_freq: int = 240, fixed=False, velocity_control=True, gui=False):
+        super().__init__(pyb_freq=pyb_freq, ctrl_freq=ctrl_freq, fixed=fixed, velocity_control=velocity_control, gui=gui)
         self.desired_velocity = [0.0, -0.5, 0.0] # vx, vy, w
 
     def _compute_reward(self):
@@ -27,7 +27,7 @@ class VelocityControlEnv(BaseEnv):
             return False
     
     def _compute_truncated(self):
-        if (self.elapsed_time > 20):
+        if (self.elapsed_time > 2000):
             return True
         else:
             return False

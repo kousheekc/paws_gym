@@ -2,7 +2,7 @@ from paws_gym.envs.velocity_control_env import VelocityControlEnv
 import numpy as np
 
 if __name__ == "__main__":
-    env = VelocityControlEnv(pyb_freq=240, ctrl_freq=4, fixed=False, gui=True)
+    env = VelocityControlEnv(pyb_freq=240, ctrl_freq=240, fixed=False, velocity_control=True, gui=True)
     print('[INFO] Observation space:', env.observation_space)
     print('[INFO] Action space:', env.action_space)
 
@@ -11,10 +11,10 @@ if __name__ == "__main__":
     total_reward = 0
     count = 0
     while True:
-        obs, rew, done, truncated, info = env.step(env.action_space.sample())
+        obs, rew, done, truncated, info = env.step(np.zeros(12))
         total_reward += rew
         count += 1
-        if truncated or done:
+        if truncated:
             break
 
     print(total_reward, count)

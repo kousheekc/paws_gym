@@ -8,7 +8,7 @@ from gymnasium import spaces
 from paws_gym.envs.bot import Bot
 
 class BaseEnv(gym.Env):
-    def __init__(self, pyb_freq: int = 240, ctrl_freq: int = 240, fixed=False, gui=False):
+    def __init__(self, pyb_freq: int = 240, ctrl_freq: int = 240, fixed=False, velocity_control=True, gui=False):
         self.pyb_freq = pyb_freq
         self.ctrl_freq = ctrl_freq
         if self.pyb_freq % self.ctrl_freq != 0:
@@ -20,6 +20,7 @@ class BaseEnv(gym.Env):
         self.elapsed_time = 0.0
 
         self.fixed = fixed
+        self.velocity_control = velocity_control
         self.GUI = gui
 
         if self.GUI:
@@ -30,13 +31,9 @@ class BaseEnv(gym.Env):
         self._init_state = None
         self._init()
 
+        # 0.5 seconds of history stored
         self._obs_buffer = deque(maxlen=self.history)
         self._act_buffer = deque(maxlen=self.history)
-
-        for _ in range(self.history):
-            self._obs_buffer.append(np.zeros(self._bot._base_obs_lower_bound.size))
-        for _ in range(self.history):
-            self._act_buffer.append(np.zeros(self._bot._base_act_lower_bound.size))
 
         self.action_space = self._action_space()
         self.observation_space = self._observation_space()
@@ -93,7 +90,7 @@ class BaseEnv(gym.Env):
         self._pybullet_client.setAdditionalSearchPath(pybullet_data.getDataPath())
 
         self._plane_id = self._pybullet_client.loadURDF("plane.urdf")
-        self._bot = Bot(self._pybullet_client, ctrl_freq=self.ctrl_freq, fixed=self.fixed)  
+        self._bot = Bot(self._pybullet_client, fixed=self.fixed, velocity_control=self.velocity_control)  
 
         self.elapsed_time = 0.0   
         self._pybullet_client.configureDebugVisualizer(self._pybullet_client.COV_ENABLE_RENDERING, 1)
@@ -101,10 +98,18 @@ class BaseEnv(gym.Env):
         self._init_state=self._pybullet_client.saveState()
 
     def _observation_space(self):
+        # Fill obs buffer with zeros
+        for _ in range(self.history):
+            self._obs_buffer.append(np.zeros(self._bot._base_obs_lower_bound.size))
+
         bot_obs = self._bot._observation_space_bounds()
         return spaces.Box(low=bot_obs[0], high=bot_obs[1], dtype=np.float32)
 
     def _action_space(self):
+        # Fill act buffer with zeros 
+        for _ in range(self.history):
+            self._act_buffer.append(np.zeros(self._bot._base_act_lower_bound.size))
+
         bot_act = self._bot._action_space_bounds()
         return spaces.Box(low=bot_act[0], high=bot_act[1], dtype=np.float32)
     
